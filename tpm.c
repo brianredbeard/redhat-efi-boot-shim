@@ -296,7 +296,7 @@ EFI_STATUS tpm_log_event(EFI_PHYSICAL_ADDRESS buf, UINTN size, UINT8 pcr,
 			 const CHAR8 *description)
 {
 	return tpm_log_event_raw(buf, size, pcr, description,
-				 strlen(description) + 1, EV_IPL, NULL);
+				 strlen((char *)description) + 1, EV_IPL, NULL);
 }
 
 EFI_STATUS tpm_log_pe(EFI_PHYSICAL_ADDRESS buf, UINTN size,
@@ -348,7 +348,7 @@ static BOOLEAN tpm_data_measured(CHAR16 *VarName, EFI_GUID VendorGuid, UINTN Var
 
 	for (i=0; i<measuredcount; i++) {
 		if ((StrCmp (VarName, measureddata[i].VariableName) == 0) &&
-		    (CompareGuid (&VendorGuid, measureddata[i].VendorGuid) == 0) &&
+		    (CompareGuid (&VendorGuid, measureddata[i].VendorGuid)) &&
 		    (VarSize == measureddata[i].Size) &&
 		    (CompareMem (VarData, measureddata[i].Data, VarSize) == 0)) {
 			return TRUE;
@@ -363,8 +363,9 @@ static EFI_STATUS tpm_record_data_measurement(CHAR16 *VarName, EFI_GUID VendorGu
 	if (measureddata == NULL) {
 		measureddata = AllocatePool(sizeof(*measureddata));
 	} else {
-		measureddata = ReallocatePool(measureddata, measuredcount * sizeof(*measureddata),
-					      (measuredcount + 1) * sizeof(*measureddata));
+		measureddata = ReallocatePool(measuredcount * sizeof(*measureddata),
+					      (measuredcount + 1) * sizeof(*measureddata),
+					      measureddata);
 	}
 
 	if (measureddata == NULL)
