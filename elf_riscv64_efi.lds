@@ -25,13 +25,25 @@ SECTIONS
   }
   _etext = .;
   _text_size = _etext - _text;
-  . = ALIGN(65536);
-  _DYNAMIC = .;
-  .dynamic  : { *(.dynamic) }
+  . = ALIGN(4096);
+  .note.gnu.build-id : {
+    *(.note.gnu.build-id)
+  }
+
+  . = ALIGN(4096);
+  .data.ident : {
+    *(.data.ident)
+  }
+  . = ALIGN(4096);
+  .sbatlevel : {
+    *(.sbatlevel)
+  }
+
   . = ALIGN(4096);
   .data :
   {
    _data = .;
+   *(.rodata*)
    *(.sdata)
    *(.data)
    *(.data1)
@@ -50,12 +62,12 @@ SECTIONS
    *(SORT(.init_array.*))
    *(.init_array)
    __init_array_end = .;
-  . = ALIGN(16);
+   . = ALIGN(16);
    __CTOR_LIST__ = .;
    *(SORT(.ctors.*))
    *(.ctors)
    __CTOR_END__ = .;
-  . = ALIGN(16);
+   . = ALIGN(16);
    __DTOR_LIST__ = .;
    *(SORT(.dtors.*))
    *(.dtors)
@@ -83,9 +95,16 @@ SECTIONS
   . = ALIGN(4096);
   .reloc :
   {
-    KEEP (*(.reloc))
+    *(.reloc)
   }
 
+  . = ALIGN(4096);
+  .vendor_cert :
+  {
+    *(.vendor_cert)
+  }
+  . = ALIGN(4096);
+  .dynamic  : { *(.dynamic) }
   . = ALIGN(4096);
   .rela :
   {
@@ -98,13 +117,9 @@ SECTIONS
     *(.rela.fini_array*)
     *(.rela.ctors*)
     *(.rela.dtors*)
-
   }
   . = ALIGN(4096);
   .rela.plt : { *(.rela.plt) }
-  . = ALIGN(4096);
-  .rodata : { *(.rodata*) }
-  . = ALIGN(512);
   _edata = .;
   _data_size = _edata - _data;
 
@@ -126,7 +141,6 @@ SECTIONS
   . = ALIGN(4096);
   .dynstr   : { *(.dynstr) }
   . = ALIGN(4096);
-  .note.gnu.build-id : { *(.note.gnu.build-id) }
   .ignored.reloc :
   {
     *(.rela.reloc)
